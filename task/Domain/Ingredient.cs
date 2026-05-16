@@ -1,47 +1,31 @@
-using System;
-using System.Collections.Generic;
-
 namespace RecipesApp.Core.Domain
 {
-    public interface IEntity
+    public struct Quantity
     {
-        string Id { get; set; }
-    }
+        public double Value { get; set; }
+        public MeasurementUnit Unit { get; set; }
 
-    public class RecipeStep
-    {
-        public int StepNumber { get; set; }
-        public string Description { get; set; }
-
-        public RecipeStep(int stepNumber, string description)
+        public Quantity(double value, MeasurementUnit unit)
         {
-            StepNumber = stepNumber;
-            Description = description;
+            Value = value;
+            Unit = unit;
+        }
+
+        public override string ToString()
+        {
+            return Value.ToString() + " " + Unit.ToString();
         }
     }
 
-    public class Recipe : IEntity
+    public class Ingredient
     {
-        public string Id { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public RecipeCategory Category { get; set; }
-        public int PreparationTimeMinutes { get; set; }
-        public int DifficultyLevel { get; set; }
-        public bool IsFavorite { get; set; }
-        public string Notes { get; set; }
+        public string Name { get; set; }
+        public Quantity Amount { get; set; }
 
-        public List<Ingredient> Ingredients { get; set; }
-        public List<RecipeStep> Steps { get; set; }
-
-        public Recipe()
+        public Ingredient(string name, Quantity amount)
         {
-            Id = Guid.NewGuid().ToString();
-            Title = string.Empty;
-            Description = string.Empty;
-            Notes = string.Empty;
-            Ingredients = new List<Ingredient>();
-            Steps = new List<RecipeStep>();
+            Name = name;
+            Amount = amount;
         }
     }
 }
