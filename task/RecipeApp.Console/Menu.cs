@@ -23,12 +23,14 @@ namespace RecipesApp.ConsoleUI
             bool isRunning = true;
             while (isRunning)
             {
-                Printer.PrintHeader("Головне меню");
+                Printer.PrintHeader("ГОЛОВНЕ МЕНЮ");
                 Console.WriteLine("1. Показати всі рецепти");
                 Console.WriteLine("2. Додати новий рецепт");
-                Console.WriteLine("3. Знайти рецепт");
-                Console.WriteLine("4. Масштабувати рецепт (Варіант 5)");
-                Console.WriteLine("5. Вихід");
+                Console.WriteLine("3. Знайти рецепт за словом");
+                Console.WriteLine("4. Масштабувати порції рецепта (Варіант 5)");
+                Console.WriteLine("5. Додати/Видалити рецепт з Улюблених (Події)");
+                Console.WriteLine("6. Створити список покупок з рецепта (Варіант 5)");
+                Console.WriteLine("7. Вихід");
                 Console.WriteLine();
 
                 int choice = InputHandler.GetInt("Оберіть пункт меню: ");
@@ -48,6 +50,12 @@ namespace RecipesApp.ConsoleUI
                         ScaleRecipeMenu();
                         break;
                     case 5:
+                        ToggleFavoriteMenu();
+                        break;
+                    case 6:
+                        CreateShoppingListMenu();
+                        break;
+                    case 7:
                         isRunning = false;
                         break;
                     default:
@@ -60,7 +68,7 @@ namespace RecipesApp.ConsoleUI
 
         private void ShowAllRecipes()
         {
-            Printer.PrintHeader("Список рецептів");
+            Printer.PrintHeader("СПИСОК РЕЦЕПТІВ");
             List<Recipe> recipes = _recipeRepo.GetAll();
 
             if (recipes.Count == 0)
@@ -81,7 +89,7 @@ namespace RecipesApp.ConsoleUI
 
         private void AddNewRecipe()
         {
-            Printer.PrintHeader("Додавання нового рецепта");
+            Printer.PrintHeader("ДОДАВАННЯ НОВОГО РЕЦЕПТА");
             
             Recipe newRecipe = new Recipe();
             newRecipe.Title = InputHandler.GetString("Введіть назву рецепта: ");
@@ -98,17 +106,16 @@ namespace RecipesApp.ConsoleUI
             _recipeRepo.Add(newRecipe);
             _recipeRepo.Save();
 
-            Console.WriteLine("\nРецепт успішно додано та збережено!");
+            Console.WriteLine("\nРецепт успішно додано та збережено в JSON!");
             Console.ReadLine();
         }
 
         private void SearchRecipe()
         {
-            Printer.PrintHeader("Пошук рецепта");
+            Printer.PrintHeader("ПОШУК РЕЦЕПТА");
             string query = InputHandler.GetString("Введіть слово для пошуку: ");
 
             List<Recipe> results = _recipeService.SearchRecipes(query);
-
 
             if (results.Count == 0)
             {
@@ -127,7 +134,7 @@ namespace RecipesApp.ConsoleUI
 
         private void ScaleRecipeMenu()
         {
-            Printer.PrintHeader("Масштабування порцій (Варіант 5)");
+            Printer.PrintHeader("МАСШТАБУВАННЯ ПОРЦІЙ (Варіант 5)");
             
             string id = InputHandler.GetString("Введіть ID рецепта: ");
             Recipe original = _recipeRepo.GetById(id);
@@ -139,20 +146,70 @@ namespace RecipesApp.ConsoleUI
                 return;
             }
 
-            double factor = InputHandler.GetDouble("Введіть коефіцієнт (напр. 2 для подвійної порції, 0,5 для половини): ");
+            double factor = InputHandler.GetDouble("Введіть коефіцієнт (напр. 2 для подвійної, 0.5 для половини): ");
 
             try
             {
                 Recipe scaled = _recipeService.ScaleRecipe(original, factor);
                 Printer.PrintRecipeDetails(scaled);
-                
-                Console.WriteLine("Масштабування виконано успішно. Цей рецепт існує лише в пам'яті як розрахунок.");
+                Console.WriteLine("\nРозрахунок завершено. Зміни в файл не записувалися (згідно з ТЗ).");
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Помилка: " + ex.Message);
             }
             
+            Console.ReadLine();
+        }
+
+        private void ToggleFavoriteMenu()
+        {
+            Printer.PrintHeader("ЗМІНА СТАТУСУ ЗБЕРЕЖЕНОГО (УЛЮБЛЕНОГО)");
+            
+            string id = InputHandler.GetString("Введіть ID рецепта: ");
+            Recipe recipe = _recipeRepo.GetById(id);
+
+            if (recipe == null)
+            {
+                Console.WriteLine("Рецепт не знайдено.");
+                Console.ReadLine();
+                return;
+            }
+
+            _recipeService.ToggleFavorite(recipe);
+            
+            _recipeRepo.Save(); 
+            
+            Console.WriteLine("Статус успішно оновлено та збережено на диску!");
+            Console.ReadLine();
+        }
+
+        private void CreateShoppingListMenu()
+        {
+            Printer.PrintHeader("ГЕНЕРАЦІЯ СПИСКУ ПОКУПОК (Варіант 5)");
+            
+            string id = InputHandler.GetString("Введіть ID рецепта: ");
+            Recipe recipe = _recipeRepo.GetById(id);
+
+            if (recipe == null)
+            {
+                Console.WriteLine("Рецепт не знайдено.");
+                Console.ReadLine();
+                return;
+            }
+
+            string listName = "Список для: " + recipe.Title;
+            
+            ShoppingList list = _listService.CreateFromRecipe(recipe, listName);
+
+            Console.WriteLine("\nСтворено новий список покупок:");
+            Console.WriteLine("Назва: " + list.Name);
+            Console.WriteLine("Елементи до купівлі:");
+            foreach (Ingredient item in list.Items)
+            {
+                Console.WriteLine("- " + item.Name + ": " + item.Amount.ToString());
+            }
+
             Console.ReadLine();
         }
     }
