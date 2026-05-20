@@ -485,5 +485,7 @@ $RECYCLE.BIN/
 
 obj/
 bin/
+
+/
 .vs/
 
