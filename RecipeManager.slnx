@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="RecipeApp.Tests\RecipeApp.Tests.csproj" Type="Classic C#" />
+  <Project Path="task/task.csproj" />
+</Solution>

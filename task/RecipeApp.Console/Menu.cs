@@ -94,46 +94,62 @@ namespace RecipesApp.ConsoleUI
         private void AddNewRecipe()
         {
             Printer.PrintHeader("ДОДАВАННЯ НОВОГО РЕЦЕПТА");
-    
+
             Recipe newRecipe = new Recipe();
             newRecipe.Title = InputHandler.GetString("Введіть назву рецепта: ");
             newRecipe.Description = InputHandler.GetString("Введіть опис: ");
             newRecipe.PreparationTimeMinutes = InputHandler.GetInt("Час приготування (хв): ");
-    
+
             bool addingIngredients = true;
             while (addingIngredients)
-        {
-            Console.WriteLine("\n--- Додавання інгредієнта ---");
-            Console.WriteLine("Назва інгредієнта (або натисніть Enter для завершення): ");
-            string ingName = Console.ReadLine();
-            
-            if (string.IsNullOrWhiteSpace(ingName))
             {
-                addingIngredients = false;
-                continue;
-            }
+                Console.WriteLine("\n--- Додавання інгредієнта ---");
+                Console.Write("Назва інгредієнта (або натисніть Enter для завершення): "); 
+                string ingName = Console.ReadLine();
         
-            double ingAmount = InputHandler.GetDouble("Кількість (число): ");
+            if (string.IsNullOrWhiteSpace(ingName))
+                {
+                    addingIngredients = false;
+                    continue;
+                }
+    
+                double ingAmount = InputHandler.GetDouble("Кількість (число): ");
 
-            Console.Write("Одиниця виміру (Gram, Pcs, Ml): ");
-            string unitInput = Console.ReadLine();
+                Console.Write("Одиниця виміру (Gram, Pcs, Ml): ");
+                string unitInput = Console.ReadLine();
 
             if (!Enum.TryParse(unitInput, true, out MeasurementUnit unit))
-            {
-            unit = MeasurementUnit.Gram; 
-            Console.WriteLine("[Невідома одиниця виміру. Автоматично встановлено Gram]");
-            }
+                {
+                    unit = MeasurementUnit.Gram; 
+                    Console.WriteLine("[Невідома одиниця виміру. Автоматично встановлено Gram]");
+                }
 
-            Ingredient ingredient = new Ingredient(ingName, new Quantity(ingAmount, MeasurementUnit.Gram));
+            Ingredient ingredient = new Ingredient(ingName, new Quantity(ingAmount, unit));
             newRecipe.Ingredients.Add(ingredient);
-        
-            Console.WriteLine($"[Успішно додано: {ingName} - {ingAmount}г]");
+    
+            Console.WriteLine($"[Успішно додано: {ingName} - {ingAmount} {unit}]");
         }
+
+        var allRecipes = _recipeRepo.GetAll().ToList();
+        int nextId = 1;
+
+        foreach (var r in allRecipes)
+        {
+            if (int.TryParse(r.Id, out int parsedId))
+            {
+                if (parsedId >= nextId)
+                {
+                    nextId = parsedId + 1;
+                }
+            }
+        }
+
+            newRecipe.Id = nextId.ToString(); 
 
             _recipeRepo.Add(newRecipe);
             _recipeRepo.Save();
 
-            Console.WriteLine("\nРецепт успішно створено, всі інгредієнти збережено в JSON!");
+            Console.WriteLine($"\nРецепт '{newRecipe.Title}' успішно створено під номером {newRecipe.Id}!");
             Console.ReadLine();
         }
 
