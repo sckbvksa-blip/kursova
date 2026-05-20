@@ -27,10 +27,10 @@ namespace RecipesApp.ConsoleUI
                 Console.WriteLine("1. Показати всі рецепти");
                 Console.WriteLine("2. Додати новий рецепт");
                 Console.WriteLine("3. Знайти рецепт за словом");
-                Console.WriteLine("4. Масштабувати порції рецепта (Варіант 5)");
-                Console.WriteLine("5. Додати/Видалити рецепт з Улюблених (Події)");
-                Console.WriteLine("6. Створити список покупок з рецепта (Варіант 5)");
-                Console.WriteLine("7. Вихід");
+                Console.WriteLine("4. Масштабувати порції рецепта");
+                Console.WriteLine("5. Додати/Видалити рецепт з Улюблених");
+                Console.WriteLine("6. Створити список покупок з рецепта");
+                Console.WriteLine("0 Вихід");
                 Console.WriteLine();
 
                 int choice = InputHandler.GetInt("Оберіть пункт меню: ");
