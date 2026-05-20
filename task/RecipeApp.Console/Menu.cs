@@ -30,7 +30,7 @@ namespace RecipesApp.ConsoleUI
                 Console.WriteLine("4. Масштабувати порції рецепта");
                 Console.WriteLine("5. Додати/Видалити рецепт з Улюблених");
                 Console.WriteLine("6. Створити список покупок з рецепта");
-                Console.WriteLine("0 Вихід");
+                Console.WriteLine("7. Вихід");
                 Console.WriteLine();
 
                 int choice = InputHandler.GetInt("Оберіть пункт меню: ");
@@ -90,23 +90,36 @@ namespace RecipesApp.ConsoleUI
         private void AddNewRecipe()
         {
             Printer.PrintHeader("ДОДАВАННЯ НОВОГО РЕЦЕПТА");
-            
+    
             Recipe newRecipe = new Recipe();
             newRecipe.Title = InputHandler.GetString("Введіть назву рецепта: ");
             newRecipe.Description = InputHandler.GetString("Введіть опис: ");
             newRecipe.PreparationTimeMinutes = InputHandler.GetInt("Час приготування (хв): ");
-            
+    
+            bool addingIngredients = true;
+            while (addingIngredients)
+        {
             Console.WriteLine("\n--- Додавання інгредієнта ---");
-            string ingName = InputHandler.GetString("Назва інгредієнта: ");
+            string ingName = InputHandler.GetString("Назва інгредієнта (або натисніть Enter для завершення): ");
+        
+            if (string.IsNullOrWhiteSpace(ingName))
+            {
+                addingIngredients = false;
+                continue;
+            }
+        
             double ingAmount = InputHandler.GetDouble("Кількість (число): ");
-            
+
             Ingredient ingredient = new Ingredient(ingName, new Quantity(ingAmount, MeasurementUnit.Gram));
             newRecipe.Ingredients.Add(ingredient);
+        
+            Console.WriteLine($"[Успішно додано: {ingName} - {ingAmount}г]");
+        }
 
             _recipeRepo.Add(newRecipe);
             _recipeRepo.Save();
 
-            Console.WriteLine("\nРецепт успішно додано та збережено в JSON!");
+            Console.WriteLine("\nРецепт успішно створено, всі інгредієнти збережено в JSON!");
             Console.ReadLine();
         }
 
@@ -176,7 +189,7 @@ namespace RecipesApp.ConsoleUI
                 return;
             }
 
-            _recipeService.ToggleFavorite(recipe);
+            _recipeService.ToggleFavorite(id);
             
             _recipeRepo.Save(); 
             
