@@ -27,7 +27,7 @@ namespace RecipesApp.ConsoleUI
             Console.WriteLine("Категорія: " + recipe.Category);
             Console.WriteLine("Час приготування: " + recipe.PreparationTimeMinutes + " хв");
             Console.WriteLine("Складність: " + recipe.DifficultyLevel + "/5");
-            Console.WriteLine("Улюблений: " + (recipe.IsFavorite ? "Так" : "Ні"));
+            Console.WriteLine("Улюблений: " + (recipe.IsFavorite ? "Так." : "Ні."));
             Console.WriteLine("Опис: " + recipe.Description);
             Console.WriteLine("Нотатки: " + recipe.Notes);
             

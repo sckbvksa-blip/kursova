@@ -31,7 +31,7 @@ namespace RecipesApp.ConsoleUI
                 Console.WriteLine("5. Додати/Видалити рецепт з Улюблених");
                 Console.WriteLine("6. Створити список покупок з рецепта");
                 Console.WriteLine("7. Видалити рецепт з книжки");
-                Console.WriteLine("0. Вихід");
+                Console.WriteLine("0. Вихід.");
                 Console.WriteLine();
 
                 int choice = InputHandler.GetInt("Оберіть пункт меню: ");

@@ -16,7 +16,7 @@ namespace RecipesApp.ConsoleUI
                 {
                     break;
                 }
-                Console.WriteLine("Помилка: поле не може бути порожнім. Спробуйте ще раз.");
+                Console.WriteLine("Помилка: поле не може бути порожнім. Спробуйте ще раз");
             }
             return input;
         }
@@ -52,7 +52,7 @@ namespace RecipesApp.ConsoleUI
                 {
                     break;
                 }
-                Console.WriteLine("Помилка: введіть коректне число, більше за нуль.");
+                Console.WriteLine("Помилка: введіть коректне число, більше за нуль");
             }
             return result;
         }
