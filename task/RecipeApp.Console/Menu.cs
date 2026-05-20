@@ -30,7 +30,8 @@ namespace RecipesApp.ConsoleUI
                 Console.WriteLine("4. Масштабувати порції рецепта");
                 Console.WriteLine("5. Додати/Видалити рецепт з Улюблених");
                 Console.WriteLine("6. Створити список покупок з рецепта");
-                Console.WriteLine("7. Вихід");
+                Console.WriteLine("7. Видалити рецепт з книжки");
+                Console.WriteLine("0. Вихід");
                 Console.WriteLine();
 
                 int choice = InputHandler.GetInt("Оберіть пункт меню: ");
@@ -56,6 +57,9 @@ namespace RecipesApp.ConsoleUI
                         CreateShoppingListMenu();
                         break;
                     case 7:
+                        DeleteRecipeMenu();
+                        break;
+                    case 0:
                         isRunning = false;
                         break;
                     default:
@@ -100,8 +104,9 @@ namespace RecipesApp.ConsoleUI
             while (addingIngredients)
         {
             Console.WriteLine("\n--- Додавання інгредієнта ---");
-            string ingName = InputHandler.GetString("Назва інгредієнта (або натисніть Enter для завершення): ");
-        
+            Console.WriteLine("Назва інгредієнта (або натисніть Enter для завершення): ");
+            string ingName = Console.ReadLine();
+            
             if (string.IsNullOrWhiteSpace(ingName))
             {
                 addingIngredients = false;
@@ -109,6 +114,15 @@ namespace RecipesApp.ConsoleUI
             }
         
             double ingAmount = InputHandler.GetDouble("Кількість (число): ");
+
+            Console.Write("Одиниця виміру (Gram, Pcs, Ml): ");
+            string unitInput = Console.ReadLine();
+
+            if (!Enum.TryParse(unitInput, true, out MeasurementUnit unit))
+            {
+            unit = MeasurementUnit.Gram; 
+            Console.WriteLine("[Невідома одиниця виміру. Автоматично встановлено Gram]");
+            }
 
             Ingredient ingredient = new Ingredient(ingName, new Quantity(ingAmount, MeasurementUnit.Gram));
             newRecipe.Ingredients.Add(ingredient);
@@ -223,6 +237,27 @@ namespace RecipesApp.ConsoleUI
                 Console.WriteLine("- " + item.Name + ": " + item.Amount.ToString());
             }
 
+            Console.ReadLine();
+        }
+        private void DeleteRecipeMenu()
+        {
+            Printer.PrintHeader("ВИДАЛЕННЯ РЕЦЕПТА");
+    
+            string id = InputHandler.GetString("Введіть ID рецепта, який хочете видалити: ");
+
+            Recipe recipe = _recipeRepo.GetById(id);
+
+            if (recipe == null)
+            {
+                Console.WriteLine("Рецепт з таким ID не знайдено.");
+                Console.ReadLine();
+                return;
+            }
+
+            _recipeRepo.Delete(id); 
+            _recipeRepo.Save();
+    
+            Console.WriteLine($"\nРецепт '{recipe.Title}' успішно видалено з вашої книжки!");
             Console.ReadLine();
         }
     }
