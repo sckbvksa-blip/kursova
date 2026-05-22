@@ -100,6 +100,28 @@ namespace RecipesApp.ConsoleUI
             newRecipe.Description = InputHandler.GetString("Введіть опис: ");
             newRecipe.PreparationTimeMinutes = InputHandler.GetInt("Час приготування (хв): ");
 
+            Console.WriteLine("\n--- Доступні категорії ---");
+
+            var categories = Enum.GetValues(typeof(RecipeCategory)).Cast<RecipeCategory>().ToList();
+
+            for (int i = 0; i < categories.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. {categories[i]}");
+            }
+
+            int catChoice = InputHandler.GetInt("Оберіть номер категорії: ");
+
+            if (catChoice >= 1 && catChoice <= categories.Count)
+            {
+                newRecipe.Category = categories[catChoice - 1]; 
+                Console.WriteLine($"[Встановлено категорію: {newRecipe.Category}]");
+            }
+            else
+            {
+                 newRecipe.Category = RecipeCategory.MainCourse;
+                Console.WriteLine("[Невірний вибір. Автоматично встановлено категорію: MainCourse]");
+            }
+
             bool addingIngredients = true;
             while (addingIngredients)
             {
